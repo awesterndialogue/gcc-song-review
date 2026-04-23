@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>GCC Song Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --bg-card: #1a1c25;
+  --bg-elevated: #22252f;
+  --bg-hover: #2a2d38;
+  --text: #e8e6e3;
+  --text-muted: #8a8d98;
+  --text-dim: #5a5d68;
+  --border: #2a2d38;
+  --accent: #c9a44a;
+  --accent-dim: rgba(201,164,74,0.15);
+
+  /* Vote colors */
+  --love: #1b7a3d;
+  --like: #2d9e54;
+  --fine: #6abe83;
+  --notfan: #d4836a;
+  --dislike: #c44e3a;
+  --retire: #8b1a1a;
+
+  --love-bg: rgba(27,122,61,0.15);
+  --like-bg: rgba(45,158,84,0.15);
+  --fine-bg: rgba(106,190,131,0.15);
+  --notfan-bg: rgba(212,131,106,0.15);
+  --dislike-bg: rgba(196,78,58,0.15);
+  --retire-bg: rgba(139,26,26,0.15);
+
+  --tag-christmas: #c44e3a;
+  --tag-gcc: #c9a44a;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Login Screen ── */
+#login-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 2rem;
+}
+
+.login-logo {
+  font-family: 'Crimson Pro', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.login-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 2.5rem;
+}
+
+.login-users {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.login-user-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.login-user-btn:hover, .login-user-btn:active {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+}
+
+/* PIN Modal */
+.pin-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-overlay.show { display: flex; }
+
+.pin-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  width: 90%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.pin-modal h3 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+  color: var(--accent);
+}
+
+.pin-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+  text-align: center;
+  padding: 0.75rem;
+  width: 100%;
+  outline: none;
+}
+
+.pin-input:focus { border-color: var(--accent); }
+
+.pin-error {
+  color: var(--dislike);
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  min-height: 1.25rem;
+}
+
+.pin-cancel {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── App Shell ── */
+#app { display: none; }
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Tab Bar ── */
+.tab-bar {
+  display: flex;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* ── Tab Content ── */
+.tab-content { display: none; padding: 1rem; }
+.tab-content.active { display: block; }
+
+/* ── Song Card (Rate view) ── */
+.song-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.song-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.song-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.song-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.song-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.tag-christmas {
+  background: rgba(196,78,58,0.15);
+  color: var(--tag-christmas);
+}
+
+.tag-gcc {
+  background: rgba(201,164,74,0.15);
+  color: var(--tag-gcc);
+}
+
+.song-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.yt-btn, .dunno-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.yt-btn:hover { border-color: #c44e3a; color: #c44e3a; }
+.dunno-btn:hover { border-color: var(--accent); color: var(--accent); }
+.dunno-btn.selected { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+/* Vote Buttons */
+.vote-section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.vote-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.vote-btn {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.25rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.2;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+}
+
+.vote-btn:hover { transform: scale(1.03); }
+
+.vote-btn[data-vote="3"].selected { background: var(--love); color: #fff; border-color: var(--love); }
+.vote-btn[data-vote="2"].selected { background: var(--like); color: #fff; border-color: var(--like); }
+.vote-btn[data-vote="1"].selected { background: var(--fine); color: #1a1c25; border-color: var(--fine); }
+.vote-btn[data-vote="-1"].selected { background: var(--notfan); color: #1a1c25; border-color: var(--notfan); }
+.vote-btn[data-vote="-2"].selected { background: var(--dislike); color: #fff; border-color: var(--dislike); }
+.vote-btn[data-vote="-3"].selected { background: var(--retire); color: #fff; border-color: var(--retire); }
+
+/* Comment */
+.comment-area {
+  margin-top: 1rem;
+}
+
+.comment-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.75rem;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+}
+
+.comment-input:focus { border-color: var(--accent); }
+
+.comment-input::placeholder { color: var(--text-dim); }
+
+.submit-vote-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-vote-btn:hover { filter: brightness(1.1); }
+.submit-vote-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Other voters */
+.other-voters {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.other-voters-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.voter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.voter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+}
+
+.voter-chip:hover { filter: brightness(1.2); }
+
+.voter-chip.vote-3 { background: var(--love); color: #fff; }
+.voter-chip.vote-2 { background: var(--like); color: #fff; }
+.voter-chip.vote-1 { background: var(--fine); color: #1a1c25; }
+.voter-chip.vote--1 { background: var(--notfan); color: #1a1c25; }
+.voter-chip.vote--2 { background: var(--dislike); color: #fff; }
+.voter-chip.vote--3 { background: var(--retire); color: #fff; }
+.voter-chip.vote-dunno { background: var(--bg-elevated); color: var(--text-muted); border-color: var(--border); }
+
+/* Comment popover */
+.comment-popover {
+  display: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.comment-popover.show { display: block; }
+
+.comment-popover-name {
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.comment-popover-vote {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+/* Progress counter */
+.progress-bar-container {
+  max-width: 500px;
+  margin: 0 auto 1rem auto;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.progress-track {
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+/* Nav buttons */
+.card-nav {
+  display: flex;
+  justify-content: space-between;
+  max-width: 500px;
+  margin: 1rem auto 0;
+}
+
+.nav-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.nav-btn:hover { border-color: var(--accent); color: var(--text); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── Song List Views (All Songs, Final Review, Results) ── */
+.song-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.song-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.song-list-item:hover { border-color: var(--accent-dim); background: var(--bg-elevated); }
+
+.song-list-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.song-list-tags {
+  display: flex;
+  gap: 0.3rem;
+  margin-left: 0.5rem;
+}
+
+.song-list-status {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+.status-kept { background: var(--love-bg); color: var(--love); }
+.status-archived { background: var(--retire-bg); color: var(--retire); }
+.status-review { background: var(--accent-dim); color: var(--accent); }
+.status-pending { background: rgba(138,141,152,0.15); color: var(--text-muted); }
+.status-your-turn { background: var(--accent-dim); color: var(--accent); }
+
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filter-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Detail View (from song list) ── */
+.detail-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 200;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.detail-overlay.show { display: block; }
+
+.detail-back-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+/* ── Export Tab ── */
+.export-section {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.export-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.export-card h3 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent);
+}
+
+.export-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.export-btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1.25rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-btn:hover { filter: brightness(1.1); }
+.export-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Stats summary ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  max-width: 500px;
+  margin: 0 auto 1.5rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ── Empty states ── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state-text {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.empty-state-sub {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── Responsive ── */
+@media (max-width: 420px) {
+  .vote-btn { font-size: 0.65rem; padding: 0.5rem 0.15rem; }
+  .song-title { font-size: 1.3rem; }
+  .tab-btn { font-size: 0.72rem; padding: 0.65rem 0.3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOGIN ════════ -->
+<div id="login-screen">
+  <div class="login-logo">GCC Song Review</div>
+  <div class="login-subtitle">Worship Song Curation Tool</div>
+  <div class="login-users" id="login-users"></div>
+</div>
+
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-modal">
+    <h3 id="pin-title">Enter PIN</h3>
+    <input type="password" class="pin-input" id="pin-input" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="····">
+    <div class="pin-error" id="pin-error"></div>
+    <button class="pin-cancel" onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- ════════ APP ════════ -->
+<div id="app">
+  <header class="app-header">
+    <div class="app-title">GCC Song Review</div>
+    <div class="user-info">
+      <span class="user-name" id="current-user-name"></span>
+      <button class="logout-btn" onclick="logout()">Log out</button>
+    </div>
+  </header>
+
+  <nav class="tab-bar">
+    <button class="tab-btn active" data-tab="rate" onclick="switchTab('rate')">Rate Songs <span class="tab-badge" id="rate-badge" style="display:none"></span></button>
+    <button class="tab-btn" data-tab="review" onclick="switchTab('review')">Final Review <span class="tab-badge" id="review-badge" style="display:none"></span></button>
+    <button class="tab-btn" data-tab="all" onclick="switchTab('all')">All Songs</button>
+    <button class="tab-btn" data-tab="results" onclick="switchTab('results')">Results</button>
+    <button class="tab-btn" data-tab="export" onclick="switchTab('export')">Export</button>
+  </nav>
+
+  <!-- ── Rate Songs Tab ── -->
+  <div class="tab-content active" id="tab-rate">
+    <div class="progress-bar-container">
+      <div class="progress-info">
+        <span id="progress-label">0 of 222 rated</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="rate-card-area"></div>
+    <div class="card-nav" id="card-nav" style="display:none">
+      <button class="nav-btn" id="nav-prev" onclick="navCard(-1)">&#8592; Previous</button>
+      <button class="nav-btn" id="nav-next" onclick="navCard(1)">Next &#8594;</button>
+    </div>
+  </div>
+
+  <!-- ── Final Review Tab ── -->
+  <div class="tab-content" id="tab-review">
+    <div id="review-list-area"></div>
+  </div>
+
+  <!-- ── All Songs Tab ── -->
+  <div class="tab-content" id="tab-all">
+    <div class="filter-bar" id="all-filter-bar"></div>
+    <div class="song-list" id="all-songs-list"></div>
+  </div>
+
+  <!-- ── Results Tab ── -->
+  <div class="tab-content" id="tab-results">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="filter-bar" id="results-filter-bar"></div>
+    <div class="filter-bar" id="results-sort-bar"></div>
+    <div class="song-list" id="results-list"></div>
+  </div>
+
+  <!-- ── Export Tab ── -->
+  <div class="tab-content" id="tab-export">
+    <div class="export-section">
+      <div class="export-card">
+        <h3>Songs to Archive</h3>
+        <p>Export a clean list of songs that have been voted down, ready for archiving in Planning Center.</p>
+        <button class="export-btn" id="export-archive-btn" onclick="exportArchive()">Download Archive List (CSV)</button>
+      </div>
+      <div class="export-card">
+        <h3>Full Voting Results</h3>
+        <p>Export every song with all votes and comments — a complete record of the review process.</p>
+        <button class="export-btn" onclick="exportFull()">Download Full Results (CSV)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Detail Overlay ── -->
+<div class="detail-overlay" id="detail-overlay">
+  <button class="detail-back-btn" onclick="closeDetail()">&#8592; Back</button>
+  <div id="detail-card-area"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════ SONG DATA ════════ -->
+<script>
+const SONGS = [{"id":1,"title":"We Will Feast In The House Of Zion","ccli":"7041364","lastScheduled":"12-Jan-25","tags":[]},{"id":2,"title":"Look And See","ccli":"6550721","lastScheduled":"5-Apr-26","tags":[]},{"id":3,"title":"There Is A Fountain","ccli":"27707","lastScheduled":"15-Mar-26","tags":[]},{"id":4,"title":"Behold Our God","ccli":"5937510","lastScheduled":"28-Dec-25","tags":[]},{"id":5,"title":"Before The Throne Of God","ccli":"990391","lastScheduled":"19-Apr-26","tags":[]},{"id":6,"title":"Greater Than We Can Imagine","ccli":"5261042","lastScheduled":"15-Feb-26","tags":[]},{"id":7,"title":"Now Why This Fear","ccli":"6167736","lastScheduled":"29-Mar-26","tags":[]},{"id":8,"title":"Jesus Thank You","ccli":"4475341","lastScheduled":"10-Nov-24","tags":[]},{"id":9,"title":"My Worth Is Not In What I Own","ccli":"7024758","lastScheduled":"8-Feb-26","tags":[]},{"id":10,"title":"King Of Glory","ccli":"4403588","lastScheduled":"22-Jul-18","tags":[]},{"id":11,"title":"Revelation Song","ccli":"4447960","lastScheduled":"18-Jan-26","tags":[]},{"id":12,"title":"Let Your Blood Plead","ccli":"5939082","lastScheduled":"24-Aug-25","tags":[]},{"id":13,"title":"All I Have Is Christ","ccli":"5174122","lastScheduled":"22-Jun-25","tags":[]},{"id":14,"title":"It Is Finished (Kensrue)","ccli":"7004660","lastScheduled":"12-Apr-26","tags":[]},{"id":15,"title":"See The Destined Day Arise","ccli":"7016165","lastScheduled":"25-Jan-26","tags":[]},{"id":16,"title":"Our Song From Age To Age","ccli":"6270867","lastScheduled":"22-Oct-23","tags":[]},{"id":17,"title":"Shine Into Our Night","ccli":"6167688","lastScheduled":"26-Oct-25","tags":[]},{"id":18,"title":"Glorious Day (Living He Loved Me)","ccli":"5638022","lastScheduled":"15-Mar-26","tags":[]},{"id":19,"title":"O Great God","ccli":"4804015","lastScheduled":"15-Feb-26","tags":[]},{"id":20,"title":"Awesome Is The Lord Most High","ccli":"4674159","lastScheduled":"19-Jan-22","tags":[]},{"id":21,"title":"Come And Sing","ccli":"4750121","lastScheduled":"26-Apr-26","tags":[]},{"id":22,"title":"Come Thou Fount","ccli":"108389","lastScheduled":"30-Nov-25","tags":[]},{"id":23,"title":"It Is Finished (Matt Papa)","ccli":"5940954","lastScheduled":"5-Apr-26","tags":[]},{"id":24,"title":"Glory Awaits","ccli":"7001318","lastScheduled":"30-Apr-23","tags":[]},{"id":25,"title":"Oh Church Arise","ccli":"4611992","lastScheduled":"25-Jan-26","tags":[]},{"id":26,"title":"He Will Hold Me Fast","ccli":"4502805","lastScheduled":"15-Feb-26","tags":[]},{"id":27,"title":"Come Behold The Wondrous Mystery","ccli":"7026028","lastScheduled":"22-Mar-26","tags":[]},{"id":28,"title":"His Mercy Is More","ccli":"7065053","lastScheduled":"1-Mar-26","tags":[]},{"id":29,"title":"How Great You Are","ccli":"6271677","lastScheduled":"11-Jan-26","tags":[]},{"id":30,"title":"The Power Of The Cross","ccli":"4490766","lastScheduled":"22-Mar-26","tags":[]},{"id":31,"title":"Everlasting God","ccli":"4556538","lastScheduled":"10-Aug-25","tags":[]},{"id":32,"title":"10,000 Reasons (Bless The Lord)","ccli":"6016351","lastScheduled":"12-Apr-26","tags":[]},{"id":33,"title":"Great Is Thy Faithfulness","ccli":"18723","lastScheduled":"1-Feb-26","tags":[]},{"id":34,"title":"All Glory Be To Christ","ccli":"7008232","lastScheduled":"10-Nov-24","tags":[]},{"id":35,"title":"In Christ Alone","ccli":"3350395","lastScheduled":"5-Apr-26","tags":[]},{"id":36,"title":"We Are Listening","ccli":"4809412","lastScheduled":"28-Jan-24","tags":[]},{"id":37,"title":"Overcome","ccli":"5064359","lastScheduled":"5-Jun-22","tags":[]},{"id":38,"title":"Hosanna (Paul Baloche)","ccli":"5889046","lastScheduled":"16-Feb-25","tags":[]},{"id":39,"title":"I Stand Amazed","ccli":"25297","lastScheduled":"11-Jan-26","tags":[]},{"id":40,"title":"Lord I Need You","ccli":"5925687","lastScheduled":"14-Sep-25","tags":[]},{"id":41,"title":"Praise To The Lord","ccli":"5718265","lastScheduled":"25-Feb-24","tags":[]},{"id":42,"title":"Nothing In All The Earth","ccli":"7001323","lastScheduled":"22-Oct-23","tags":[]},{"id":43,"title":"Living Faith","ccli":"5428342","lastScheduled":"27-Sep-20","tags":[]},{"id":44,"title":"Mediator","ccli":"7004130","lastScheduled":"23-Feb-25","tags":[]},{"id":45,"title":"The Solid Rock","ccli":"7052034","lastScheduled":"22-Feb-26","tags":[]},{"id":46,"title":"How Deep The Father's Love For Us","ccli":"1558110","lastScheduled":"1-Feb-26","tags":[]},{"id":47,"title":"Christ Is Risen","ccli":"5242683","lastScheduled":"29-Mar-26","tags":[]},{"id":48,"title":"Not In Me","ccli":"7006013","lastScheduled":"4-Jan-26","tags":[]},{"id":49,"title":"Grace Greater Than Our Sin","ccli":"31690","lastScheduled":"29-Mar-26","tags":[]},{"id":50,"title":"Grace Alone","ccli":"7004659","lastScheduled":"7-Sep-25","tags":[]},{"id":51,"title":"Oh How I Need You","ccli":"6369101","lastScheduled":"15-Mar-23","tags":[]},{"id":52,"title":"How Great Is Our God","ccli":"4348399","lastScheduled":"5-Oct-25","tags":[]},{"id":53,"title":"Jesus Is Better","ccli":"7006188","lastScheduled":"11-Oct-20","tags":[]},{"id":54,"title":"This Is Our God","ccli":"7052980","lastScheduled":"29-Mar-26","tags":[]},{"id":55,"title":"Holy Holy Holy (Nicaea)","ccli":"1156","lastScheduled":"1-Feb-26","tags":[]},{"id":56,"title":"Death In His Grave","ccli":"5582202","lastScheduled":"21-Jan-24","tags":[]},{"id":57,"title":"How Firm A Foundation","ccli":"107816","lastScheduled":"6-Mar-24","tags":[]},{"id":58,"title":"Reformation Song","ccli":"7088632","lastScheduled":"8-Feb-26","tags":[]},{"id":59,"title":"Hiding Place","ccli":"7096760","lastScheduled":"5-Jun-22","tags":[]},{"id":60,"title":"Let Us Love And Sing And Wonder","ccli":"5834479","lastScheduled":"7-Sep-25","tags":[]},{"id":61,"title":"Show Us Christ","ccli":"6169253","lastScheduled":"9-Mar-25","tags":[]},{"id":62,"title":"Thy Love To Me","ccli":"7096758","lastScheduled":"4-Feb-18","tags":[]},{"id":63,"title":"Hymn Of The Ages","ccli":"7101177","lastScheduled":"19-Oct-25","tags":[]},{"id":64,"title":"Blessed Be Your Name","ccli":"3798438","lastScheduled":"29-Mar-26","tags":[]},{"id":65,"title":"'Tis So Sweet To Trust In Jesus","ccli":"22609","lastScheduled":"15-Mar-26","tags":[]},{"id":66,"title":"Glorious Day (Kristian Stanfill)","ccli":"7081388","lastScheduled":"11-May-25","tags":[]},{"id":67,"title":"Low In The Grave He Lay (Christ Arose)","ccli":"27783","lastScheduled":"5-Apr-26","tags":[]},{"id":68,"title":"Victory In Jesus","ccli":"1259","lastScheduled":"2-Jun-21","tags":[]},{"id":69,"title":"Lead Us Back","ccli":"4878333","lastScheduled":"21-Jun-20","tags":[]},{"id":70,"title":"O God Our Help In Ages Past","ccli":"43152","lastScheduled":"28-Jun-20","tags":[]},{"id":71,"title":"From the Depths of Woe I Raise to Thee, Psalm 130","ccli":"1863032","lastScheduled":"22-Feb-26","tags":[]},{"id":72,"title":"It Is Well With My Soul","ccli":"25376","lastScheduled":"18-Jan-26","tags":[]},{"id":73,"title":"All Creatures Of Our God And King (SGM)","ccli":"6529800","lastScheduled":"8-Feb-26","tags":[]},{"id":74,"title":"O Love That Wilt Not Let Me Go","ccli":"3251580","lastScheduled":"8-Mar-26","tags":[]},{"id":75,"title":"Holy Is The Lord","ccli":"4158039","lastScheduled":"5-Oct-25","tags":[]},{"id":76,"title":"Come Ye Sinners","ccli":"4582588","lastScheduled":"12-Oct-25","tags":[]},{"id":77,"title":"God's Highway","ccli":"7041357","lastScheduled":"19-Oct-25","tags":[]},{"id":78,"title":"Oh The Deep Deep Love","ccli":"5171596","lastScheduled":"17-Mar-24","tags":[]},{"id":79,"title":"Great Are You Lord","ccli":"6460220","lastScheduled":"4-Jan-26","tags":[]},{"id":80,"title":"Jesus Paid It All","ccli":"4689508","lastScheduled":"22-Feb-26","tags":[]},{"id":81,"title":"Oh Lord My Rock And My Redeemer","ccli":"7096627","lastScheduled":"7-Sep-25","tags":[]},{"id":82,"title":"Blessed Assurance","ccli":"2645094","lastScheduled":"12-Oct-25","tags":[]},{"id":83,"title":"All I Have Is Yours","ccli":"4878364","lastScheduled":"24-Mar-24","tags":[]},{"id":84,"title":"Amazing Grace","ccli":"4755360","lastScheduled":"8-Feb-26","tags":[]},{"id":85,"title":"Christ Is Mine Forevermore","ccli":"7036096","lastScheduled":"3-Aug-25","tags":[]},{"id":86,"title":"Jesus Messiah","ccli":"5183443","lastScheduled":"5-Oct-25","tags":[]},{"id":87,"title":"How Deep","ccli":"4803944","lastScheduled":"26-Apr-26","tags":[]},{"id":88,"title":"Alive","ccli":"5936339","lastScheduled":"4-Aug-24","tags":[]},{"id":89,"title":"Nothing But The Blood","ccli":"4329411","lastScheduled":"23-Mar-25","tags":[]},{"id":90,"title":"Rock Of Ages","ccli":"40588","lastScheduled":"15-Mar-26","tags":[]},{"id":91,"title":"Your Love Oh Lord","ccli":"1894255","lastScheduled":"24-Mar-24","tags":[]},{"id":92,"title":"The Old Rugged Cross","ccli":"19722","lastScheduled":"1-Mar-26","tags":[]},{"id":93,"title":"How Great Thou Art","ccli":"14181","lastScheduled":"5-Oct-25","tags":[]},{"id":94,"title":"Yet Not I But Through Christ In Me","ccli":"7121852","lastScheduled":"22-Mar-26","tags":[]},{"id":95,"title":"Come Praise And Glorify","ccli":"6167664","lastScheduled":"17-Aug-25","tags":[]},{"id":96,"title":"This Is Amazing Grace","ccli":"6333821","lastScheduled":"27-Feb-22","tags":[]},{"id":97,"title":"A Christian's Daily Prayer","ccli":"7096689","lastScheduled":"29-Mar-26","tags":[]},{"id":98,"title":"He Is Our God","ccli":"7096633","lastScheduled":"8-Mar-26","tags":[]},{"id":99,"title":"The Glories Of Calvary","ccli":"4522940","lastScheduled":"22-Mar-23","tags":[]},{"id":100,"title":"Made Alive","ccli":"6534390","lastScheduled":"4-Feb-24","tags":[]},{"id":101,"title":"Never Once","ccli":"5997055","lastScheduled":"2-Nov-22","tags":[]},{"id":102,"title":"For The Cause","ccli":"7063750","lastScheduled":"3-Aug-25","tags":[]},{"id":103,"title":"Jesus!","ccli":"6534448","lastScheduled":"1-Mar-26","tags":[]},{"id":104,"title":"Crown Him With Many Crowns","ccli":"23938","lastScheduled":"12-Apr-26","tags":[]},{"id":105,"title":"Speak, O Lord","ccli":"4615235","lastScheduled":"27-Oct-24","tags":[]},{"id":106,"title":"His Name Is Jesus","ccli":"5780107","lastScheduled":"2-Jan-22","tags":[]},{"id":107,"title":"Deliver Us","ccli":"4752291","lastScheduled":"8-Dec-19","tags":[]},{"id":108,"title":"Jesus, Strong And Kind","ccli":"7139992","lastScheduled":"8-Jun-25","tags":[]},{"id":109,"title":"Turn Your Eyes","ccli":"7120053","lastScheduled":"11-Jan-26","tags":[]},{"id":110,"title":"Behold The Christ","ccli":"7036429","lastScheduled":"12-Apr-26","tags":[]},{"id":111,"title":"Abide With Me","ccli":"7156736","lastScheduled":"1-Mar-26","tags":[]},{"id":112,"title":"Grace And Peace","ccli":"7001319","lastScheduled":"4-May-25","tags":[]},{"id":113,"title":"You Have Been Raised","ccli":"5937967","lastScheduled":"5-Apr-26","tags":[]},{"id":114,"title":"When I Survey The Wondrous Cross","ccli":"27893","lastScheduled":"19-Apr-26","tags":[]},{"id":115,"title":"Christ The Sure And Steady Anchor","ccli":"7045331","lastScheduled":"27-Apr-25","tags":[]},{"id":116,"title":"Ancient Of Days","ccli":"7121851","lastScheduled":"15-Mar-26","tags":[]},{"id":117,"title":"Amazing Grace (My Chains Are Gone)","ccli":"4768151","lastScheduled":"12-Apr-26","tags":[]},{"id":118,"title":"Count It All Joy","ccli":null,"lastScheduled":"3-Aug-25","tags":["gcc"]},{"id":119,"title":"Nothing But The Blood Of Jesus","ccli":"21332","lastScheduled":"26-Apr-26","tags":[]},{"id":120,"title":"To Live Is Christ","ccli":"5937857","lastScheduled":"22-Jun-22","tags":[]},{"id":121,"title":"Be Thou My Vision","ccli":"30639","lastScheduled":"22-Mar-26","tags":[]},{"id":122,"title":"Lovingkindness","ccli":"7160872","lastScheduled":"15-Feb-26","tags":[]},{"id":123,"title":"Praise The Lord Ye Heavens","ccli":"7026992","lastScheduled":"22-Feb-26","tags":[]},{"id":124,"title":"Is He Worthy","ccli":"7108951","lastScheduled":"2-Nov-25","tags":[]},{"id":125,"title":"Rejoice","ccli":"7004663","lastScheduled":"20-Jul-25","tags":[]},{"id":126,"title":"All Praise To Him","ccli":"7096636","lastScheduled":"3-Aug-25","tags":[]},{"id":127,"title":"Lord From Sorrows Deep I Call","ccli":"7127376","lastScheduled":"14-Aug-22","tags":[]},{"id":128,"title":"A Mighty Fortress Is Our God","ccli":"42964","lastScheduled":"26-Apr-26","tags":[]},{"id":129,"title":"Christ Our Hope In Life And Death","ccli":"7147502","lastScheduled":"26-Apr-26","tags":[]},{"id":130,"title":"Immortal Invisible","ccli":"124466","lastScheduled":"1-Feb-26","tags":[]},{"id":131,"title":"Jerusalem","ccli":"7003218","lastScheduled":"31-Aug-25","tags":[]},{"id":132,"title":"Psalm 100 (Make A Joyful Noise)","ccli":null,"lastScheduled":"19-Nov-23","tags":[]},{"id":133,"title":"God Is For Us","ccli":"7121853","lastScheduled":"8-Mar-26","tags":[]},{"id":134,"title":"Rock Of Ages (Kensrue)","ccli":"7004664","lastScheduled":"6-Nov-22","tags":[]},{"id":135,"title":"I Love You Lord","ccli":"25266","lastScheduled":"11-Jan-26","tags":[]},{"id":136,"title":"Nothing Can Separate Us!","ccli":null,"lastScheduled":"21-Apr-24","tags":["gcc"]},{"id":137,"title":"All That Thrills My Soul","ccli":"6529783","lastScheduled":"11-Aug-24","tags":[]},{"id":138,"title":"It Was Finished Upon That Cross","ccli":"7171907","lastScheduled":"16-Nov-25","tags":[]},{"id":139,"title":"Standing On The Promises","ccli":"31803","lastScheduled":"11-Jan-26","tags":[]},{"id":140,"title":"Peace With God Through Faith","ccli":null,"lastScheduled":"1-Feb-26","tags":["gcc"]},{"id":141,"title":"Psalm 42","ccli":"7199819","lastScheduled":"16-Jul-23","tags":[]},{"id":142,"title":"You Are My All In All","ccli":"825356","lastScheduled":"22-Feb-26","tags":[]},{"id":143,"title":"Psalm 1","ccli":null,"lastScheduled":"7-Jul-24","tags":[]},{"id":144,"title":"Almost Home","ccli":"7184154","lastScheduled":"24-Aug-25","tags":[]},{"id":145,"title":"Love Like You (GCC)","ccli":null,"lastScheduled":"25-Aug-24","tags":["gcc"]},{"id":146,"title":"Joy To Be","ccli":"7147886","lastScheduled":"11-May-25","tags":[]},{"id":147,"title":"Be Still My Soul (In You I Rest)","ccli":"6534077","lastScheduled":"19-Nov-23","tags":[]},{"id":148,"title":"I Believe","ccli":null,"lastScheduled":null,"tags":["gcc"]},{"id":149,"title":"I Know Who Holds Tomorrow","ccli":"17982","lastScheduled":"6-Mar-24","tags":[]},{"id":150,"title":"This Is The Day","ccli":"7195146","lastScheduled":"11-Jan-26","tags":[]},{"id":151,"title":"Praise His Name (Psalm 148)","ccli":"7197789","lastScheduled":"4-Aug-24","tags":[]},{"id":152,"title":"And Can It Be","ccli":"25280","lastScheduled":"19-Apr-26","tags":[]},{"id":153,"title":"Come Boldly To The Throne Of Grace","ccli":"5397301","lastScheduled":"1-Feb-26","tags":[]},{"id":154,"title":"Psalms 96, Sing To The Lord","ccli":null,"lastScheduled":"11-Aug-24","tags":["gcc"]},{"id":155,"title":"This Is My Father's World","ccli":"3163379","lastScheduled":"16-Nov-25","tags":[]},{"id":156,"title":"Here I Am To Worship","ccli":"3266032","lastScheduled":"1-Mar-26","tags":[]},{"id":157,"title":"I Asked the Lord That I Might Grow","ccli":null,"lastScheduled":"11-Aug-24","tags":[]},{"id":158,"title":"Cornerstone","ccli":"6158927","lastScheduled":"12-Apr-26","tags":[]},{"id":159,"title":"All Hail The Power Of Jesus Name","ccli":"25400","lastScheduled":"25-Jan-26","tags":[]},{"id":160,"title":"Your Will Be Done","ccli":"7149566","lastScheduled":"28-Sep-25","tags":[]},{"id":161,"title":"God Of Wonders","ccli":"3118757","lastScheduled":"12-Oct-25","tags":[]},{"id":162,"title":"O For A Thousand Tongues","ccli":"7133067","lastScheduled":null,"tags":[]},{"id":163,"title":"All Creatures Of Our God And King","ccli":"2846264","lastScheduled":"15-Mar-26","tags":[]},{"id":164,"title":"Joyful, Joyful, We Adore Thee","ccli":"2647951","lastScheduled":"16-Mar-25","tags":[]},{"id":165,"title":"The Lord Is My Salvation","ccli":"7063694","lastScheduled":null,"tags":[]},{"id":166,"title":"I Will Sing","ccli":"7150643","lastScheduled":"14-Sep-25","tags":[]},{"id":167,"title":"Fairest Lord Jesus","ccli":"27800","lastScheduled":"11-Jan-26","tags":[]},{"id":168,"title":"All Of Our Tomorrows","ccli":"7167554","lastScheduled":"19-Oct-25","tags":[]},{"id":169,"title":"My Jesus I Love Thee","ccli":"27817","lastScheduled":"15-Mar-26","tags":[]},{"id":170,"title":"Forgive Us","ccli":"7147887","lastScheduled":"19-Oct-25","tags":[]},{"id":171,"title":"O Worship The King (Lyons)","ccli":"1486","lastScheduled":"18-Jan-26","tags":[]},{"id":172,"title":"Christ The Lord Is Risen Today","ccli":"27965","lastScheduled":"5-Apr-26","tags":[]},{"id":173,"title":"More Love To Thee","ccli":"6340663","lastScheduled":"10-Aug-25","tags":[]},{"id":174,"title":"Were You There","ccli":"29516","lastScheduled":"18-Apr-25","tags":[]},{"id":175,"title":"The Wonderful Cross","ccli":"3148435","lastScheduled":"23-Nov-25","tags":[]},{"id":176,"title":"Easter Song","ccli":"12279","lastScheduled":"20-Apr-25","tags":[]},{"id":177,"title":"Depth of Mercy","ccli":null,"lastScheduled":null,"tags":[]},{"id":178,"title":"I Sing The Mighty Power Of God","ccli":"29097","lastScheduled":"4-Jan-26","tags":[]},{"id":179,"title":"Rejoice, the LORD is King","ccli":null,"lastScheduled":null,"tags":["gcc"]},{"id":180,"title":"Only A Holy God","ccli":"7073332","lastScheduled":"7-Dec-25","tags":[]},{"id":181,"title":"Leaning On The Everlasting Arms","ccli":"31779","lastScheduled":"22-Mar-26","tags":[]},{"id":182,"title":"I Surrender All","ccli":"23189","lastScheduled":"8-Mar-26","tags":[]},{"id":183,"title":"There Is A Redeemer","ccli":"11483","lastScheduled":"12-Apr-26","tags":[]},{"id":184,"title":"Praise To The Lord The Almighty","ccli":"43073","lastScheduled":"19-Apr-26","tags":[]},{"id":185,"title":"Take My Life And Let It Be (Hendon)","ccli":"1390","lastScheduled":"6-Jul-25","tags":[]},{"id":186,"title":"As The Deer","ccli":"1431","lastScheduled":"15-Feb-26","tags":[]},{"id":187,"title":"Create In Me A Clean Heart","ccli":null,"lastScheduled":"9-Nov-25","tags":[]},{"id":188,"title":"O The Deep Deep Love Of Jesus (Ebenezer)","ccli":"137178","lastScheduled":"19-Apr-26","tags":[]},{"id":189,"title":"Come O Sinner","ccli":"7138115","lastScheduled":null,"tags":[]},{"id":190,"title":"Are You Washed In The Blood (Washed In The Blood)","ccli":"21105","lastScheduled":"8-Mar-26","tags":[]}];
+</script>
+
+<!-- ════════ FIREBASE ════════ -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBb3O9D_y8ayQXVx87G-ZjpaMeyD-2sNYY",
+  authDomain: "pantrysense-a87c0.firebaseapp.com",
+  projectId: "pantrysense-a87c0",
+  storageBucket: "pantrysense-a87c0.appspot.com",
+  messagingSenderId: "251646271201",
+  appId: "1:251646271201:web:f49cd6d6c1274b4e2121a0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// Users - UPDATE THESE with real names and PINs
+const USERS = [
+  { key: 'greg', name: 'Greg', pin: '1964' },
+  { key: 'john', name: 'John', pin: '1981' },
+  { key: 'jason', name: 'Jason', pin: '1979' },
+  { key: 'tyler', name: 'Tyler', pin: '1999' },
+  { key: 'joshua', name: 'Joshua', pin: '1986' },
+  { key: 'charlie', name: 'Charlie', pin: '1957' },
+];
+
+const TOTAL_USERS = USERS.length;
+
+const VOTE_LABELS = {
+  3: 'Love It',
+  2: 'Like It',
+  1: "It's Fine",
+  '-1': 'Not a Fan',
+  '-2': "Don't Like It",
+  '-3': 'Please Retire This',
+  'dunno': "Don't Know It"
+};
+
+const VOTE_CSS = {
+  3: 'vote-3', 2: 'vote-2', 1: 'vote-1',
+  '-1': 'vote--1', '-2': 'vote--2', '-3': 'vote--3',
+  'dunno': 'vote-dunno'
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentUser = null;
+let songVotes = {};     // songId -> { votes: { userKey: { vote, comment, isFinal } }, youtubeUrl: '' }
+let rateQueue = [];     // song IDs the current user hasn't rated
+let rateIndex = 0;
+let unsubscribe = null;
+
+// ═══════════════════════════════════════════════
+// AUTH - PIN-BASED with ANONYMOUS FIREBASE AUTH
+// ═══════════════════════════════════════════════
+function initLogin() {
+  const container = document.getElementById('login-users');
+  container.innerHTML = '';
+  USERS.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'login-user-btn';
+    btn.textContent = u.name;
+    btn.onclick = () => openPinModal(u);
+    container.appendChild(btn);
+  });
+}
+
+let pendingUser = null;
+
+function openPinModal(user) {
+  pendingUser = user;
+  document.getElementById('pin-title').textContent = `Enter PIN for ${user.name}`;
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('pin-input').focus(), 100);
+}
+
+function closePinModal() {
+  document.getElementById('pin-overlay').classList.remove('show');
+  pendingUser = null;
+}
+
+document.getElementById('pin-input').addEventListener('input', function(e) {
+  if (this.value.length === 4) {
+    if (pendingUser && this.value === pendingUser.pin) {
+      loginUser(pendingUser);
+      closePinModal();
+    } else {
+      document.getElementById('pin-error').textContent = 'Incorrect PIN';
+      this.value = '';
+    }
+  }
+});
+
+document.getElementById('pin-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closePinModal();
+});
+
+async function loginUser(user) {
+  try {
+    await auth.signInAnonymously();
+  } catch (e) {
+    console.log('Anonymous auth not available, proceeding without:', e);
+  }
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('current-user-name').textContent = user.name;
+  startListening();
+}
+
+function logout() {
+  if (unsubscribe) unsubscribe();
+  currentUser = null;
+  songVotes = {};
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  try { auth.signOut(); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════
+// FIRESTORE - REAL-TIME SYNC
+// ═══════════════════════════════════════════════
+function startListening() {
+  const collection = db.collection('gcc_song_review');
+  unsubscribe = collection.onSnapshot(snapshot => {
+    snapshot.docChanges().forEach(change => {
+      const id = change.doc.id;
+      const data = change.doc.data();
+      if (change.type === 'removed') {
+        delete songVotes[id];
+      } else {
+        songVotes[id] = data;
+      }
+    });
+    refreshAll();
+  }, err => {
+    console.error('Firestore listen error:', err);
+    // Fallback: use local state only
+    refreshAll();
+  });
+}
+
+async function saveVote(songId, vote, comment, isFinal = false) {
+  const docRef = db.collection('gcc_song_review').doc(String(songId));
+  const key = `votes.${currentUser.key}`;
+  try {
+    await docRef.set({
+      [`votes.${currentUser.key}`]: { vote, comment: comment || '', isFinal }
+    }, { merge: true });
+  } catch(e) {
+    console.error('Save error:', e);
+    // Update locally anyway
+    if (!songVotes[songId]) songVotes[songId] = {};
+    if (!songVotes[songId][`votes.${currentUser.key}`]) songVotes[songId][`votes.${currentUser.key}`] = {};
+    // Handle nested dot notation for local fallback
+    if (!songVotes[songId].votes) songVotes[songId].votes = {};
+    songVotes[songId].votes[currentUser.key] = { vote, comment: comment || '', isFinal };
+    refreshAll();
+  }
+}
+
+async function saveYoutubeUrl(songId, url) {
+  const docRef = db.collection('gcc_song_review').doc(String(songId));
+  try {
+    await docRef.set({ youtubeUrl: url }, { merge: true });
+  } catch(e) {
+    console.error('Save youtube error:', e);
+  }
+}
+
+// Helper to get votes for a song from the nested Firestore structure
+function getVotesForSong(songId) {
+  const doc = songVotes[String(songId)];
+  if (!doc) return {};
+  // Firestore stores as flat "votes.user1": {...} due to set+merge
+  // We need to reconstruct
+  const votes = {};
+  for (const [key, val] of Object.entries(doc)) {
+    if (key.startsWith('votes.')) {
+      const userKey = key.replace('votes.', '');
+      votes[userKey] = val;
+    }
+  }
+  // Also check if there's a nested votes object
+  if (doc.votes) {
+    for (const [userKey, val] of Object.entries(doc.votes)) {
+      votes[userKey] = val;
+    }
+  }
+  return votes;
+}
+
+function getYoutubeUrl(songId) {
+  const doc = songVotes[String(songId)];
+  return doc?.youtubeUrl || null;
+}
+
+// ═══════════════════════════════════════════════
+// SONG STATUS LOGIC
+// ═══════════════════════════════════════════════
+function getSongStatus(songId) {
+  const votes = getVotesForSong(songId);
+  const voteEntries = Object.values(votes).filter(v => v.vote !== undefined);
+  const realVotes = voteEntries.filter(v => v.vote !== 'dunno');
+  const totalVoted = voteEntries.length;
+
+  if (totalVoted < TOTAL_USERS) return 'pending'; // Not everyone has voted
+
+  // Everyone has voted - check for unanimous
+  const allUp = realVotes.length > 0 && realVotes.every(v => v.vote > 0);
+  const allDown = realVotes.length > 0 && realVotes.every(v => v.vote < 0);
+  const allDunno = realVotes.length === 0; // everyone said "don't know"
+
+  if (allUp) return 'kept';       // Unanimous up = auto-keep
+  if (allDown) return 'archived';  // Unanimous down = auto-archive
+  if (allDunno) return 'kept';     // If nobody knows it... keep for now? Or flag separately
+
+  // Mixed votes → check if final review is done
+  const finalCount = voteEntries.filter(v => v.isFinal).length;
+  if (finalCount >= TOTAL_USERS) {
+    // Final review complete - decide by average score
+    const avg = realVotes.reduce((sum, v) => sum + v.vote, 0) / (realVotes.length || 1);
+    return avg < 0 ? 'archived' : 'kept';
+  }
+
+  return 'review'; // Needs final review
+}
+
+function hasUserVoted(songId, userKey) {
+  const votes = getVotesForSong(songId);
+  return votes[userKey]?.vote !== undefined;
+}
+
+function hasUserFinalized(songId, userKey) {
+  const votes = getVotesForSong(songId);
+  return votes[userKey]?.isFinal === true;
+}
+
+// ═══════════════════════════════════════════════
+// REFRESH ALL VIEWS
+// ═══════════════════════════════════════════════
+function refreshAll() {
+  buildRateQueue();
+  renderRateCard();
+  renderFinalReview();
+  renderAllSongs();
+  renderResults();
+  updateBadges();
+}
+
+function updateBadges() {
+  // Rate badge
+  const rateBadge = document.getElementById('rate-badge');
+  const unrated = SONGS.filter(s => !hasUserVoted(s.id, currentUser.key)).length;
+  if (unrated > 0) {
+    rateBadge.textContent = unrated;
+    rateBadge.style.display = 'inline-flex';
+  } else {
+    rateBadge.style.display = 'none';
+  }
+
+  // Review badge
+  const reviewBadge = document.getElementById('review-badge');
+  const reviewCount = SONGS.filter(s => {
+    const status = getSongStatus(s.id);
+    return status === 'review' && !hasUserFinalized(s.id, currentUser.key);
+  }).length;
+  if (reviewCount > 0) {
+    reviewBadge.textContent = reviewCount;
+    reviewBadge.style.display = 'inline-flex';
+  } else {
+    reviewBadge.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// RATE SONGS TAB
+// ═══════════════════════════════════════════════
+function buildRateQueue() {
+  // Songs user hasn't voted on, sorted alphabetically
+  rateQueue = SONGS
+    .filter(s => !hasUserVoted(s.id, currentUser.key))
+    .sort((a, b) => a.title.localeCompare(b.title))
+    .map(s => s.id);
+
+  // Clamp index
+  if (rateIndex >= rateQueue.length) rateIndex = Math.max(0, rateQueue.length - 1);
+
+  // Update progress
+  const rated = SONGS.length - rateQueue.length;
+  const pct = Math.round((rated / SONGS.length) * 100);
+  document.getElementById('progress-label').textContent = `${rated} of ${SONGS.length} rated`;
+  document.getElementById('progress-pct').textContent = `${pct}%`;
+  document.getElementById('progress-fill').style.width = `${pct}%`;
+}
+
+function renderRateCard() {
+  const area = document.getElementById('rate-card-area');
+  const nav = document.getElementById('card-nav');
+
+  if (rateQueue.length === 0) {
+    area.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">&#127926;</div>
+      <div class="empty-state-text">All songs rated!</div>
+      <div class="empty-state-sub">Check the Final Review tab for songs that need a second look.</div>
+    </div>`;
+    nav.style.display = 'none';
+    return;
+  }
+
+  nav.style.display = 'flex';
+  const songId = rateQueue[rateIndex];
+  const song = SONGS.find(s => s.id === songId);
+  area.innerHTML = buildSongCard(song, false);
+
+  document.getElementById('nav-prev').disabled = rateIndex === 0;
+  document.getElementById('nav-next').disabled = rateIndex >= rateQueue.length - 1;
+}
+
+function navCard(dir) {
+  rateIndex += dir;
+  if (rateIndex < 0) rateIndex = 0;
+  if (rateIndex >= rateQueue.length) rateIndex = rateQueue.length - 1;
+  renderRateCard();
+}
+
+function buildSongCard(song, isFinalReview = false, isDetail = false) {
+  const votes = getVotesForSong(song.id);
+  const myVote = votes[currentUser.key];
+  const ytUrl = getYoutubeUrl(song.id);
+  const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(song.title + ' worship song')}`;
+  const ccliUrl = song.ccli ? `https://songselect.ccli.com/Songs/${song.ccli}` : null;
+
+  let tagsHtml = '';
+  if (song.tags.includes('christmas')) tagsHtml += '<span class="tag tag-christmas">Christmas</span>';
+  if (song.tags.includes('gcc')) tagsHtml += '<span class="tag tag-gcc">Grace Covenant Collective</span>';
+
+  let dateHtml = '';
+  if (song.lastScheduled) {
+    dateHtml = `<span class="song-date">Last played: ${song.lastScheduled}</span>`;
+  } else {
+    dateHtml = `<span class="song-date" style="color:var(--text-dim)">Never scheduled</span>`;
+  }
+
+  // Other voters - only show in Final Review or Detail view (not during initial rating)
+  let votersHtml = '';
+  if (isFinalReview || isDetail) {
+    const allVoters = Object.entries(votes);
+    const chips = allVoters.map(([userKey, voteData]) => {
+      const user = USERS.find(u => u.key === userKey);
+      const name = user ? user.name : userKey;
+      const cssClass = VOTE_CSS[voteData.vote] || 'vote-dunno';
+      const hasComment = voteData.comment && voteData.comment.trim();
+      return `<span class="voter-chip ${cssClass}" onclick="toggleCommentPopover(this, '${userKey}', ${song.id})">${name}${hasComment ? ' 💬' : ''}</span>`;
+    }).filter(Boolean).join('');
+
+    if (chips) {
+      votersHtml = `<div class="other-voters">
+        <div class="other-voters-label">All Votes</div>
+        <div class="voter-chips">${chips}</div>
+        <div class="comment-popover" id="popover-${song.id}"></div>
+      </div>`;
+    }
+  }
+
+  // Vote buttons
+  const selectedVote = myVote?.vote;
+  const selectedComment = myVote?.comment || '';
+  const isDunno = selectedVote === 'dunno';
+
+  const prefix = isFinalReview ? 'fr' : (isDetail ? 'det' : 'rate');
+
+  const upBtns = [3, 2, 1].map(v =>
+    `<button class="vote-btn ${selectedVote === v ? 'selected' : ''}" data-vote="${v}" onclick="selectVote(${song.id}, ${v}, '${prefix}')">${VOTE_LABELS[v]}</button>`
+  ).join('');
+
+  const downBtns = [-1, -2, -3].map(v =>
+    `<button class="vote-btn ${selectedVote === v ? 'selected' : ''}" data-vote="${v}" onclick="selectVote(${song.id}, ${v}, '${prefix}')">${VOTE_LABELS[v]}</button>`
+  ).join('');
+
+  const submitLabel = isFinalReview ? 'Lock In Final Vote' : 'Submit Vote';
+  const submitDisabled = selectedVote === undefined && !isDunno ? 'disabled' : '';
+
+  return `<div class="song-card" id="card-${prefix}-${song.id}">
+    <div class="song-card-header">
+      <div class="song-title">${escHtml(song.title)}</div>
+    </div>
+    <div class="song-meta">
+      ${dateHtml}
+      ${tagsHtml}
+    </div>
+    <div class="song-actions">
+      ${ccliUrl ? `<a class="yt-btn" href="${ccliUrl}" target="_blank" rel="noopener">&#9836; SongSelect</a>` : ''}
+      <a class="yt-btn" href="${ytUrl || searchUrl}" target="_blank" rel="noopener">&#9654; YouTube</a>
+      <button class="dunno-btn ${isDunno ? 'selected' : ''}" onclick="selectDunno(${song.id}, '${prefix}')">? Don't Know It</button>
+    </div>
+    <div class="vote-section-label">Keep it &#8593;</div>
+    <div class="vote-row">${upBtns}</div>
+    <div class="vote-section-label">Drop it &#8595;</div>
+    <div class="vote-row">${downBtns}</div>
+    <div class="comment-area">
+      <textarea class="comment-input" id="comment-${prefix}-${song.id}" placeholder="Optional: why this rating?">${escHtml(selectedComment)}</textarea>
+    </div>
+    <button class="submit-vote-btn" id="submit-${prefix}-${song.id}" onclick="submitVote(${song.id}, '${prefix}')" ${submitDisabled}>${submitLabel}</button>
+    ${votersHtml}
+  </div>`;
+}
+
+// Track pending selections before submit
+let pendingVotes = {}; // songId -> { vote, prefix }
+
+function selectVote(songId, vote, prefix) {
+  pendingVotes[songId] = { ...(pendingVotes[songId] || {}), vote };
+  // Update UI
+  const card = document.getElementById(`card-${prefix}-${songId}`);
+  if (!card) return;
+  card.querySelectorAll('.vote-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.vote) === vote);
+  });
+  card.querySelector('.dunno-btn')?.classList.remove('selected');
+  card.querySelector(`#submit-${prefix}-${songId}`)?.removeAttribute('disabled');
+}
+
+function selectDunno(songId, prefix) {
+  pendingVotes[songId] = { ...(pendingVotes[songId] || {}), vote: 'dunno' };
+  const card = document.getElementById(`card-${prefix}-${songId}`);
+  if (!card) return;
+  card.querySelectorAll('.vote-btn').forEach(btn => btn.classList.remove('selected'));
+  card.querySelector('.dunno-btn')?.classList.add('selected');
+  card.querySelector(`#submit-${prefix}-${songId}`)?.removeAttribute('disabled');
+}
+
+async function submitVote(songId, prefix) {
+  const pending = pendingVotes[songId];
+  if (!pending?.vote && pending?.vote !== 0) {
+    // Check if there was a previously saved vote (for re-submission in final review)
+    const existingVotes = getVotesForSong(songId);
+    const existing = existingVotes[currentUser.key];
+    if (!existing) return;
+    pending = { vote: existing.vote };
+    pendingVotes[songId] = pending;
+  }
+
+  const commentEl = document.getElementById(`comment-${prefix}-${songId}`);
+  const comment = commentEl ? commentEl.value.trim() : '';
+  const isFinal = prefix === 'fr';
+
+  await saveVote(songId, pending.vote, comment, isFinal);
+  delete pendingVotes[songId];
+
+  showToast(isFinal ? 'Final vote locked in!' : 'Vote submitted!');
+
+  // If in rate queue, advance to next
+  if (prefix === 'rate') {
+    // Small delay so user sees the toast
+    setTimeout(() => {
+      buildRateQueue();
+      renderRateCard();
+    }, 300);
+  }
+}
+
+function toggleCommentPopover(chip, userKey, songId) {
+  const popover = document.getElementById(`popover-${songId}`);
+  if (!popover) return;
+
+  const votes = getVotesForSong(songId);
+  const voteData = votes[userKey];
+  if (!voteData) return;
+
+  const user = USERS.find(u => u.key === userKey);
+  const name = user ? user.name : userKey;
+  const voteLabel = VOTE_LABELS[voteData.vote] || 'Unknown';
+  const comment = voteData.comment || 'No comment';
+
+  if (popover.classList.contains('show') && popover.dataset.user === userKey) {
+    popover.classList.remove('show');
+    return;
+  }
+
+  popover.dataset.user = userKey;
+  popover.innerHTML = `
+    <div class="comment-popover-name">${escHtml(name)}</div>
+    <div class="comment-popover-vote">${voteLabel}</div>
+    <div>${escHtml(comment)}</div>`;
+  popover.classList.add('show');
+}
+
+// ═══════════════════════════════════════════════
+// FINAL REVIEW TAB
+// ═══════════════════════════════════════════════
+function renderFinalReview() {
+  const area = document.getElementById('review-list-area');
+  const reviewSongs = SONGS.filter(s => {
+    const status = getSongStatus(s.id);
+    return status === 'review' && !hasUserFinalized(s.id, currentUser.key);
+  }).sort((a, b) => a.title.localeCompare(b.title));
+
+  if (reviewSongs.length === 0) {
+    const doneCount = SONGS.filter(s => getSongStatus(s.id) === 'review' && hasUserFinalized(s.id, currentUser.key)).length;
+    const waitingCount = SONGS.filter(s => getSongStatus(s.id) === 'pending').length;
+    let subText = 'All caught up! Check back as others finish voting.';
+    if (waitingCount > 0) subText = `${waitingCount} songs still waiting for all votes.`;
+    if (doneCount > 0) subText = `You've locked in ${doneCount} final votes. Waiting for others to finish.`;
+
+    area.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">&#9989;</div>
+      <div class="empty-state-text">No songs need your final review</div>
+      <div class="empty-state-sub">${subText}</div>
+    </div>`;
+    return;
+  }
+
+  area.innerHTML = reviewSongs.map(song =>
+    `<div style="margin-bottom:1.5rem">${buildSongCard(song, true)}</div>`
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════
+// ALL SONGS TAB
+// ═══════════════════════════════════════════════
+let allFilter = 'all';
+
+function renderAllSongs() {
+  const filterBar = document.getElementById('all-filter-bar');
+  const list = document.getElementById('all-songs-list');
+
+  const counts = { all: SONGS.length, christmas: 0, gcc: 0, regular: 0 };
+  SONGS.forEach(s => {
+    if (s.tags.includes('christmas')) counts.christmas++;
+    else if (s.tags.includes('gcc')) counts.gcc++;
+    else counts.regular++;
+  });
+
+  filterBar.innerHTML = ['all', 'regular', 'christmas', 'gcc'].map(f => {
+    const labels = { all: `All (${counts.all})`, regular: `Regular (${counts.regular})`, christmas: `Christmas (${counts.christmas})`, gcc: `GCC Originals (${counts.gcc})` };
+    return `<button class="filter-btn ${allFilter === f ? 'active' : ''}" onclick="setAllFilter('${f}')">${labels[f]}</button>`;
+  }).join('');
+
+  let filtered = SONGS;
+  if (allFilter === 'christmas') filtered = SONGS.filter(s => s.tags.includes('christmas'));
+  else if (allFilter === 'gcc') filtered = SONGS.filter(s => s.tags.includes('gcc'));
+  else if (allFilter === 'regular') filtered = SONGS.filter(s => !s.tags.includes('christmas') && !s.tags.includes('gcc'));
+
+  filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
+
+  list.innerHTML = filtered.map(song => {
+    const status = getSongStatus(song.id);
+    const statusLabel = { kept: 'Kept', archived: 'Archived', review: 'Final Review', pending: 'In Progress' }[status];
+    const statusClass = { kept: 'status-kept', archived: 'status-archived', review: 'status-review', pending: 'status-pending' }[status];
+
+    let tagsHtml = '';
+    if (song.tags.includes('christmas')) tagsHtml += '<span class="tag tag-christmas" style="font-size:0.6rem">Christmas</span>';
+    if (song.tags.includes('gcc')) tagsHtml += '<span class="tag tag-gcc" style="font-size:0.6rem">GCC</span>';
+
+    return `<div class="song-list-item" onclick="openDetail(${song.id})">
+      <span class="song-list-title">${escHtml(song.title)}</span>
+      <div class="song-list-tags">${tagsHtml}</div>
+      <span class="song-list-status ${statusClass}">${statusLabel}</span>
+    </div>`;
+  }).join('');
+}
+
+function setAllFilter(f) {
+  allFilter = f;
+  renderAllSongs();
+}
+
+// ═══════════════════════════════════════════════
+// RESULTS TAB
+// ═══════════════════════════════════════════════
+let resultsFilter = 'all';
+let resultsSort = 'alpha'; // 'alpha', 'highest', 'lowest'
+
+function getSongAvg(songId) {
+  const votes = getVotesForSong(songId);
+  const realVotes = Object.values(votes).filter(v => v.vote !== 'dunno' && v.vote !== undefined);
+  return realVotes.length ? realVotes.reduce((s, v) => s + v.vote, 0) / realVotes.length : 0;
+}
+
+function renderResults() {
+  const grid = document.getElementById('stats-grid');
+  const filterBar = document.getElementById('results-filter-bar');
+  const sortBar = document.getElementById('results-sort-bar');
+  const list = document.getElementById('results-list');
+
+  let kept = 0, archived = 0, inReview = 0, pending = 0;
+  SONGS.forEach(s => {
+    const st = getSongStatus(s.id);
+    if (st === 'kept') kept++;
+    else if (st === 'archived') archived++;
+    else if (st === 'review') inReview++;
+    else pending++;
+  });
+
+  grid.innerHTML = `
+    <div class="stat-card"><div class="stat-number">${kept}</div><div class="stat-label">Kept</div></div>
+    <div class="stat-card"><div class="stat-number">${archived}</div><div class="stat-label">Archived</div></div>
+    <div class="stat-card"><div class="stat-number">${inReview}</div><div class="stat-label">Final Review</div></div>
+    <div class="stat-card"><div class="stat-number">${pending}</div><div class="stat-label">In Progress</div></div>`;
+
+  filterBar.innerHTML = ['all', 'kept', 'archived', 'review', 'pending'].map(f => {
+    const labels = { all: 'All', kept: 'Kept', archived: 'Archived', review: 'Final Review', pending: 'In Progress' };
+    const active = resultsFilter === f ? 'active' : '';
+    return `<button class="filter-btn ${active}" onclick="setResultsFilter('${f}')">${labels[f]}</button>`;
+  }).join('');
+
+  sortBar.innerHTML = ['alpha', 'highest', 'lowest'].map(s => {
+    const labels = { alpha: 'A → Z', highest: 'Most Popular', lowest: 'Least Popular' };
+    const active = resultsSort === s ? 'active' : '';
+    return `<button class="filter-btn ${active}" onclick="setResultsSort('${s}')">${labels[s]}</button>`;
+  }).join('');
+
+  let filtered = SONGS;
+  if (resultsFilter !== 'all') {
+    filtered = SONGS.filter(s => getSongStatus(s.id) === resultsFilter);
+  }
+  if (resultsSort === 'alpha') {
+    filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (resultsSort === 'highest') {
+    filtered = filtered.sort((a, b) => getSongAvg(b.id) - getSongAvg(a.id));
+  } else if (resultsSort === 'lowest') {
+    filtered = filtered.sort((a, b) => getSongAvg(a.id) - getSongAvg(b.id));
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-sub">No songs in this category yet.</div></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(song => {
+    const status = getSongStatus(song.id);
+    const votes = getVotesForSong(song.id);
+    const realVotes = Object.values(votes).filter(v => v.vote !== 'dunno' && v.vote !== undefined);
+    const avg = realVotes.length ? (realVotes.reduce((s, v) => s + v.vote, 0) / realVotes.length).toFixed(1) : '—';
+    const voteCount = Object.keys(votes).length;
+
+    const statusLabel = { kept: 'Kept', archived: 'Archived', review: 'Final Review', pending: 'In Progress' }[status];
+    const statusClass = { kept: 'status-kept', archived: 'status-archived', review: 'status-review', pending: 'status-pending' }[status];
+
+    return `<div class="song-list-item" onclick="openDetail(${song.id})">
+      <span class="song-list-title">${escHtml(song.title)}</span>
+      <span style="font-size:0.8rem;color:var(--text-muted);margin-left:0.5rem">${avg} avg · ${voteCount}/${TOTAL_USERS}</span>
+      <span class="song-list-status ${statusClass}">${statusLabel}</span>
+    </div>`;
+  }).join('');
+}
+
+function setResultsFilter(f) {
+  resultsFilter = f;
+  renderResults();
+}
+
+function setResultsSort(s) {
+  resultsSort = s;
+  renderResults();
+}
+
+// ═══════════════════════════════════════════════
+// DETAIL OVERLAY
+// ═══════════════════════════════════════════════
+function openDetail(songId) {
+  const song = SONGS.find(s => s.id === songId);
+  if (!song) return;
+  const area = document.getElementById('detail-card-area');
+  area.innerHTML = buildSongCard(song, false, true);
+  document.getElementById('detail-overlay').classList.add('show');
+}
+
+function closeDetail() {
+  document.getElementById('detail-overlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════
+function exportArchive() {
+  const archived = SONGS.filter(s => getSongStatus(s.id) === 'archived');
+  if (archived.length === 0) {
+    showToast('No archived songs to export yet');
+    return;
+  }
+  let csv = 'Title,Last Scheduled,Tags,Status\n';
+  archived.sort((a, b) => a.title.localeCompare(b.title)).forEach(s => {
+    const tags = s.tags.join('; ');
+    csv += `"${s.title}","${s.lastScheduled || ''}","${tags}","Archived"\n`;
+  });
+  downloadCSV(csv, 'gcc_songs_to_archive.csv');
+  showToast(`Exported ${archived.length} songs to archive`);
+}
+
+function exportFull() {
+  const userHeaders = USERS.map(u => `${u.name} Vote,${u.name} Comment`).join(',');
+  let csv = `Title,Last Scheduled,Tags,Status,Avg Score,${userHeaders}\n`;
+
+  SONGS.sort((a, b) => {
+    // Archived first, then by title
+    const sa = getSongStatus(a.id) === 'archived' ? 0 : 1;
+    const sb = getSongStatus(b.id) === 'archived' ? 0 : 1;
+    if (sa !== sb) return sa - sb;
+    return a.title.localeCompare(b.title);
+  }).forEach(song => {
+    const status = getSongStatus(song.id);
+    const votes = getVotesForSong(song.id);
+    const realVotes = Object.values(votes).filter(v => v.vote !== 'dunno' && v.vote !== undefined);
+    const avg = realVotes.length ? (realVotes.reduce((s, v) => s + v.vote, 0) / realVotes.length).toFixed(1) : '';
+    const tags = song.tags.join('; ');
+
+    const userCols = USERS.map(u => {
+      const v = votes[u.key];
+      if (!v) return ',';
+      const label = VOTE_LABELS[v.vote] || '';
+      const comment = (v.comment || '').replace(/"/g, '""');
+      return `"${label}","${comment}"`;
+    }).join(',');
+
+    csv += `"${song.title}","${song.lastScheduled || ''}","${tags}","${status}","${avg}",${userCols}\n`;
+  });
+
+  downloadCSV(csv, 'gcc_song_review_full_results.csv');
+  showToast('Full results exported');
+}
+
+function downloadCSV(content, filename) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${tab}`));
+}
+
+// ═══════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+initLogin();
+</script>
+</body>
+</html>
